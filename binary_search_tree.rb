@@ -53,10 +53,50 @@ def breadth_first_search( goal_node,start_node = $binar_tree[-1], queue = [])
   end
 end
 
+def depth_first_search(value)
+  stack = []
+  stack << $binar_tree[-1]
+  while true do
+    u = stack.delete_at(-1)
+    if u.value == value
+      puts u.value
+      return true
+      break
+    else
+      u.child_nodes.each { |child| stack << child }
+      if stack.length == 0
+        return nil
+        break
+      end
+    end
+  end
+end
+
+$k = false
+
+def dfs_rec(value,current_node = $binar_tree[-1])
+  if value == current_node.value
+    puts value
+    $k = true
+    return true
+  else
+    u = current_node.child_nodes
+    u.each { |child| dfs_rec(value, child) } if u != []
+    $k == false ? false : true
+  end
+end
+
 $binar_tree = []
 build_tree([1, 2, 5, 6, 9, 10, 12])
-print $binar_tree
+# print $binar_tree
+# puts
+# puts breadth_first_search(6)
+# puts
+# p breadth_first_search(11)
+# puts
+# puts depth_first_search(9)
 puts
-puts breadth_first_search(6)
+puts dfs_rec(9)
+$k = false
 puts
-p breadth_first_search(11)
+puts dfs_rec(0)
