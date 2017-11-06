@@ -7,24 +7,12 @@ class Node
     @child_nodes = []
   end
 
-  def parent_add(value)
-    @parent_nodes << value
+  def parent_add(node)
+    @parent_nodes << node
   end
 
-  def child_add(value)
-    @child_nodes << value
-  end
-
-  def parents
-    @parent_nodes.each {|parent|
-      print "#{parent} "
-    }
-  end
-
-  def childs
-    @child_nodes.each {|child|
-      print "#{child} "
-    }
+  def child_add(node)
+    @child_nodes << node
   end
 end
 
@@ -46,9 +34,29 @@ def build_tree(array,parent=nil)
     node.child_add (build_tree(array[1],value))
   end
   $binar_tree << node
-  value
+  node
+end
+
+def breadth_first_search( goal_node,start_node = $binar_tree[-1], queue = [])
+  queue << start_node if !queue.include?(start_node)
+  u = queue.delete_at(0)
+  if u.value == goal_node
+    puts u.value
+    return true
+  else
+    u.child_nodes.each { |child| queue << child }
+    if queue.length == 0
+      return nil
+    else
+      breadth_first_search(goal_node,queue[0],queue)
+    end
+  end
 end
 
 $binar_tree = []
 build_tree([1, 2, 5, 6, 9, 10, 12])
-$binar_tree.each {|e| e.parents}
+print $binar_tree
+puts
+puts breadth_first_search(6)
+puts
+p breadth_first_search(11)
