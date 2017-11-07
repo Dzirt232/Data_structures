@@ -1,4 +1,4 @@
-class Node # class node for binar_tree
+class Node
   attr_accessor :value, :parent_nodes, :child_nodes
 
   def initialize(value)
@@ -6,85 +6,35 @@ class Node # class node for binar_tree
     @parent_nodes = []
     @child_nodes = []
   end
-
-  def parent_add(node)
-    if node.class == Array
-      @parent_nodes << node[0]
-    else
-      @parent_nodes << node
-    end
-  end
-
-  def child_add(node)
-    if node.class == Array
-      @child_nodes << node[0]
-    else
-      @child_nodes << node
-    end
-  end
 end
 
-def knight_moves(goal_node,start_node = $binar_tree[0],queue=[]) # bfs algorithm for knight
-  if !queue.include?(start_node) && queue == []
-    queue << start_node
+def knight_moves
+  current_move = nil
+  $path.each do |key, value|
+     if key.value == $start_node
+       current_move = key
+       break
+     end
   end
-  u = queue.delete_at(0)
-  # print "\n#{u.value}\n"
-  if u.value == goal_node
-    track = []
-    track << u
-    node = u
-    while node.parent_nodes != []
-      track << node.parent_nodes[0]
-      node = node.parent_nodes[0]
-    end
-    track.reverse!
-    puts "This is realize in #{track.length} terns."
-    puts "Your shortest track: "
-    track.each { |node| print "#{node.value}\n"}
-    return true
-  else
-    u.child_nodes.each { |child| queue << child }
-    if queue.length == 0
-      return nil
-    else
-      knight_moves(goal_node,start_node,queue)
-    end
+  final_path = Array.new
+  total_moves = 0
+  while $path.has_key?(current_move)
+
+      final_path.push(current_move.value)
+
+      total_moves += 1
+      if current_move.value == $path[current_move].value  then
+          break
+      else
+          current_move = $path[current_move]
+      end
   end
-  # current_node = queue.delete_at(0)
-  # if current_node == goal_node
-  #   stack << current_node
-  #   index = -1
-  #   track = []
-  #   while stack[index].parent != stack[0]
-  #     track << stack.parent
-  #     index -= 1
-  #   end
-  #   stack << track
-  #   puts "This is realize in #{stack.length} terns."
-  #   puts "Your shortest track: "
-  #   stack.each { |node| print "#{node}\n"}
-  #   return true
-  # else
-  #     i = current_node[0]
-  #     j = current_node[1]
-  #     for k in [-2,2] do
-  #       for l in [-1,1] do
-  #         current_node = [i+k,j+l]
-  #         queue << current_node if $pole.include?(current_node)
-  #       end
-  #     end
-  #     for k in [-1,1] do
-  #       for l in [-2,2] do
-  #         current_node = [i+k,j+l]
-  #         queue << current_node if $pole.include?(current_node)
-  #       end
-  #     end
-  #     print queue
-  #     knight_moves(current_node,goal_node,queue,stack)
-  #     current_node
-  # end
+
+  puts "You made #{total_moves} moves. Your path is:"
+  print final_path
+  puts " "
 end
+
 
 def create_pole # creare pole for chess, uses only for testing: given node is be?
   pole = []
@@ -96,95 +46,60 @@ def create_pole # creare pole for chess, uses only for testing: given node is be
   pole
 end
 
-def build_tree(current_node,parent=nil) #create binar tree for start position, this has include all 64 ceils of doska
-  node = Node.new(current_node)
-  if parent != nil
-    node.parent_add(parent)
+def find_path(start_node,goal_node)
+  beginning = Node.new(goal_node)
+  $path = {}
+  $nodes = []
+  $nodes << beginning
+  $visited = []
+  while !$nodes.empty?
+    current_node = $nodes.shift
+    return current_node if current_node.value == start_node
+    determine_neighbors_of(current_node)
   end
-  $binar_tree << node
-  $length += 1
-  i = current_node[0]
-  j = current_node[1]
-  values = []
-  return node if $length == 64
-  $binar_tree.each { |e| values << e.value }
-  index_1   = [i+1,j+2]
-  index_2   = [i+2,j+1]
-  index_1_2 = [i-1,j-2]
-  index_2_2 = [i-2,j-1]
-  index_1_3 = [i-1,j+2]
-  index_2_3 = [i+2,j-1]
-  index_1_4 = [i+1,j-2]
-  index_2_4 = [i-2,j+1]
-  if $pole.include?(index_1) && !values.include?(index_1)
-    $binar_tree << node.child_add(build_tree(index_1,node))
-  elsif $pole.include?(index_2) && !values.include?(index_2)
-    $binar_tree << node.child_add(build_tree(index_2,node))
-  elsif $pole.include?(index_1_2) && !values.include?(index_1_2)
-    $binar_tree << node.child_add(build_tree(index_1_2,node))
-  elsif $pole.include?(index_2_2) && !values.include?(index_2_2)
-    $binar_tree << node.child_add(build_tree(index_2_2,node))
-  elsif $pole.include?(index_1_3) && !values.include?(index_1_3)
-    $binar_tree << node.child_add(build_tree(index_1_3,node))
-  elsif $pole.include?(index_2_3) && !values.include?(index_2_3)
-    $binar_tree << node.child_add(build_tree(index_2_3,node))
-  elsif $pole.include?(index_1_4) && !values.include?(index_1_4)
-    $binar_tree << node.child_add(build_tree(index_1_4,node))
-  else
-    $binar_tree << node.child_add(build_tree(index_2_4,node))
-  end
-  # if $length < 16 && ($pole.include?(index_1) || $pole.include?(index_2)) && (!values.include?(index_1) || !values.include?(index_2))
-  #   $binar_tree << node.child_add(build_tree(index_1,node))[0]  if $pole.include?(index_1) && !values.include?(index_1)
-  #   $binar_tree << node.child_add(build_tree(index_2,node))[0]
-  # elsif $length >= 16 && $length < 32 && ($pole.include?(index_1_2) || $pole.include?(index_2_2)) && (!values.include?(index_1_2) || !values.include?(index_2_2))
-  #   $binar_tree << node.child_add(build_tree(index_1_2,node))[0]  if $pole.include?(index_1_2) && !values.include?(index_1_2)
-  #   $binar_tree << node.child_add(build_tree(index_2_2,node))[0]
-  # elsif $length >= 32 && $length < 48 && ($pole.include?(index_1_3) || $pole.include?(index_2_3)) && (!values.include?(index_1_3) || !values.include?(index_2_3))
-  #   $binar_tree << node.child_add(build_tree(index_1_3,node))[0]  if $pole.include?(index_1_3) && !values.include?(index_1_3)
-  #   $binar_tree << node.child_add(build_tree(index_2_3,node))[0]
-  # else
-  #   $binar_tree << node.child_add(build_tree(index_1_4,node))[0]  if $pole.include?(index_1_4) if !values.include?(index_1_4)
-  #   $binar_tree << node.child_add(build_tree(index_2_4,node))[0]  if $pole.include?(index_2_4) if !values.include?(index_2_4)
-  # end
+end
 
-  # for l in [-1,1] do
-  #   k = $length <=16 ? -2 : 2
-  #   current_node_vn = [i+k,j+l]
-  #   if $pole.include?(current_node_vn) && $length < 32
-  #     $length += 1
-  #     $binar_tree << node.child_add(build_tree(current_node_vn,current_node))[0]
-  #   else
-  #     break
-  #   end
-  # end
-  #
-  # for l in [-2,2] do
-  #   k = $length <=48 ? -2 : 2
-  #   current_node_vn = [i+k,j+l]
-  #   if $pole.include?(current_node_vn) && $length < 64 && $length >= 32
-  #     $length += 1
-  #     $binar_tree << node.child_add(build_tree(current_node_vn,current_node))[0]
-  #   else
-  #     break
-  #   end
-  # end
-  # $binar_tree << node if !$binar_tree.include?(node)
-  node
+def determine_neighbors_of(current_node)
+
+        add_neighbor_node(current_node, current_node)
+
+        neighbor_node = Node.new([current_node.value[0]-2, current_node.value[1] - 1])
+        add_neighbor_node(current_node,neighbor_node)
+
+        neighbor_node = Node.new([current_node.value[0]-1, current_node.value[1] - 2])
+        add_neighbor_node(current_node,neighbor_node)
+
+        neighbor_node = Node.new([current_node.value[0]+2, current_node.value[1] + 1])
+        add_neighbor_node(current_node,neighbor_node)
+
+        neighbor_node = Node.new([current_node.value[0]+1, current_node.value[1] + 2])
+        add_neighbor_node(current_node,neighbor_node)
+
+        neighbor_node = Node.new([current_node.value[0]-2, current_node.value[1] + 1])
+        add_neighbor_node(current_node,neighbor_node)
+
+        neighbor_node = Node.new([current_node.value[0]-1, current_node.value[1] + 2])
+        add_neighbor_node(current_node,neighbor_node)
+
+        neighbor_node = Node.new([current_node.value[0]+2, current_node.value[1] - 1])
+        add_neighbor_node(current_node,neighbor_node)
+
+        neighbor_node = Node.new([current_node.value[0]+1, current_node.value[1] - 2])
+        add_neighbor_node(current_node,neighbor_node)
+end
+
+def add_neighbor_node(current_node, neighbor_node)
+      if $pole.include?(neighbor_node.value) && !$visited.include?(neighbor_node)
+          $visited << neighbor_node
+          $nodes.push(neighbor_node)
+          $path[neighbor_node] = current_node
+      end
 end
 
 $pole = create_pole
-$binar_tree = []
-$length = 0
 
-start_node = [4,4]
-build_tree(start_node)
-$binar_tree = $binar_tree[0..$binar_tree.length/2]
+$start_node = [1,1]
+$goal_node = [8,8]
+find_path($start_node,$goal_node)
 
-# print $binar_tree
-# puts $binar_tree.length
-
-# puts $binar_tree[-1].class
-# print $binar_tree[-1].parent_nodes
-# $binar_tree.each { |e| print "\n#{e.value}\n" }
-# print $pole
-knight_moves([1,1])
+knight_moves
