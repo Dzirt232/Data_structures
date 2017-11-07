@@ -1,10 +1,8 @@
 class Node
-  attr_accessor :value, :parent_nodes, :child_nodes
+  attr_accessor :value
 
   def initialize(value)
     @value = value
-    @parent_nodes = []
-    @child_nodes = []
   end
 end
 
@@ -19,15 +17,13 @@ def knight_moves
   final_path = Array.new
   total_moves = 0
   while $path.has_key?(current_move)
-
-      final_path.push(current_move.value)
-
-      total_moves += 1
-      if current_move.value == $path[current_move].value  then
-          break
-      else
-          current_move = $path[current_move]
-      end
+    final_path.push(current_move.value)
+    total_moves += 1
+    if current_move.value == $path[current_move].value  then
+      break
+    else
+      current_move = $path[current_move]
+    end
   end
 
   puts "You made #{total_moves} moves. Your path is:"
@@ -46,7 +42,7 @@ def create_pole # creare pole for chess, uses only for testing: given node is be
   pole
 end
 
-def find_path(start_node,goal_node)
+def find_path(start_node,goal_node) #bfs alghorithm without recursion
   beginning = Node.new(goal_node)
   $path = {}
   $nodes = []
@@ -98,8 +94,8 @@ end
 
 $pole = create_pole
 
-$start_node = [1,1]
-$goal_node = [8,8]
+$start_node = [4,4]
+$goal_node = [1,1]
 find_path($start_node,$goal_node)
 
 knight_moves
