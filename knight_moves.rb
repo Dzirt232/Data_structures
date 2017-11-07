@@ -8,26 +8,35 @@ class Node # class node for binar_tree
   end
 
   def parent_add(node)
-    @parent_nodes << node
+    if node.class == Array
+      @parent_nodes << node[0]
+    else
+      @parent_nodes << node
+    end
   end
 
   def child_add(node)
-    @child_nodes << node
+    if node.class == Array
+      @child_nodes << node[0]
+    else
+      @child_nodes << node
+    end
   end
 end
 
-def knight_moves(goal_node,start_node = $binar_tree[-1],queue=[]) # bfs algorithm for knight
+def knight_moves(goal_node,start_node = $binar_tree[0],queue=[]) # bfs algorithm for knight
   if !queue.include?(start_node) && queue == []
     queue << start_node
   end
   u = queue.delete_at(0)
   # print "\n#{u.value}\n"
   if u.value == goal_node
+    track = []
     track << u
     node = u
     while node.parent_nodes != []
-      track << node.parents[0]
-      node = node.parents[0]
+      track << node.parent_nodes[0]
+      node = node.parent_nodes[0]
     end
     track.reverse!
     puts "This is realize in #{track.length} terns."
@@ -91,14 +100,13 @@ def build_tree(current_node,parent=nil) #create binar tree for start position, t
   node = Node.new(current_node)
   if parent != nil
     node.parent_add(parent)
-  else
-    $binar_tree << node
   end
+  $binar_tree << node
   $length += 1
   i = current_node[0]
   j = current_node[1]
   values = []
-  return true if $length == 64
+  return node if $length == 64
   $binar_tree.each { |e| values << e.value }
   index_1   = [i+1,j+2]
   index_2   = [i+2,j+1]
@@ -108,14 +116,23 @@ def build_tree(current_node,parent=nil) #create binar tree for start position, t
   index_2_3 = [i+2,j-1]
   index_1_4 = [i+1,j-2]
   index_2_4 = [i-2,j+1]
-  $binar_tree << node.child_add(build_tree(index_1,node))[0]  if $pole.include?(index_1) && !values.include?(index_1)
-  $binar_tree << node.child_add(build_tree(index_2,node))[0]  if $pole.include?(index_2) && !values.include?(index_2)
-  $binar_tree << node.child_add(build_tree(index_1_2,node))[0]  if $pole.include?(index_1_2) && !values.include?(index_1_2)
-  $binar_tree << node.child_add(build_tree(index_2_2,node))[0]  if $pole.include?(index_2_2) && !values.include?(index_2_2)
-  $binar_tree << node.child_add(build_tree(index_1_3,node))[0]  if $pole.include?(index_1_3) && !values.include?(index_1_3)
-  $binar_tree << node.child_add(build_tree(index_2_3,node))[0]  if $pole.include?(index_2_3) && !values.include?(index_2_3)
-  $binar_tree << node.child_add(build_tree(index_1_4,node))[0]  if $pole.include?(index_1_4) && !values.include?(index_1_4)
-  $binar_tree << node.child_add(build_tree(index_2_4,node))[0]  if $pole.include?(index_2_4) && !values.include?(index_2_4)
+  if $pole.include?(index_1) && !values.include?(index_1)
+    $binar_tree << node.child_add(build_tree(index_1,node))
+  elsif $pole.include?(index_2) && !values.include?(index_2)
+    $binar_tree << node.child_add(build_tree(index_2,node))
+  elsif $pole.include?(index_1_2) && !values.include?(index_1_2)
+    $binar_tree << node.child_add(build_tree(index_1_2,node))
+  elsif $pole.include?(index_2_2) && !values.include?(index_2_2)
+    $binar_tree << node.child_add(build_tree(index_2_2,node))
+  elsif $pole.include?(index_1_3) && !values.include?(index_1_3)
+    $binar_tree << node.child_add(build_tree(index_1_3,node))
+  elsif $pole.include?(index_2_3) && !values.include?(index_2_3)
+    $binar_tree << node.child_add(build_tree(index_2_3,node))
+  elsif $pole.include?(index_1_4) && !values.include?(index_1_4)
+    $binar_tree << node.child_add(build_tree(index_1_4,node))
+  else
+    $binar_tree << node.child_add(build_tree(index_2_4,node))
+  end
   # if $length < 16 && ($pole.include?(index_1) || $pole.include?(index_2)) && (!values.include?(index_1) || !values.include?(index_2))
   #   $binar_tree << node.child_add(build_tree(index_1,node))[0]  if $pole.include?(index_1) && !values.include?(index_1)
   #   $binar_tree << node.child_add(build_tree(index_2,node))[0]
@@ -161,10 +178,13 @@ $length = 0
 
 start_node = [4,4]
 build_tree(start_node)
+$binar_tree = $binar_tree[0..$binar_tree.length/2]
 
-puts $binar_tree.length
+# print $binar_tree
+# puts $binar_tree.length
 
+# puts $binar_tree[-1].class
 # print $binar_tree[-1].parent_nodes
-$binar_tree.each { |e| print "\n#{e.value}\n" }
+# $binar_tree.each { |e| print "\n#{e.value}\n" }
 # print $pole
 knight_moves([1,1])
